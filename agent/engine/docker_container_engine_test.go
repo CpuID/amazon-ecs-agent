@@ -349,6 +349,27 @@ func TestCreateContainerInspectTimeout(t *testing.T) {
 	wait.Done()
 }
 
+func TestCheckIfNetHostEnvVarExists(t *testing.T) {
+	tests := make(map[bool][]string)
+	tests[true] = []string{
+		"PATH=someblah:something",
+		"ECS_NET=host",
+		"HOSTNAME=asdf",
+		"SOMEVAR=aaaaa",
+	}
+	tests[false] = []string{
+		"PATH=someblah:something",
+		"HOSTNAME=asdf",
+		"SOMEVAR=aaaaa",
+	}
+	for k, v := range tests {
+		result := checkIfNetHostEnvVarExists(&v)
+		if result != k {
+			t.Error("Expected", k, "got", result)
+		}
+	}
+}
+
 func TestCreateContainer(t *testing.T) {
 	mockDocker, client, _, done := dockerclientSetup(t)
 	defer done()
